@@ -4,13 +4,16 @@ let board;
 let boardWidth = 360;
 let boardHeight = 640;
 let context;
+let groundImg;
+let highScore = 0;
 
 //bird
-let birdWidth = 34; //width/height ratio = 408/228 = 17/12
-let birdHeight = 24;
+let birdWidth = 44; //width/height ratio = 408/228 = 17/12
+let birdHeight = 49;
 let birdX = boardWidth/8;
 let birdY = boardHeight/2;
 let birdImg;
+let imgIndex = 1;
 
 let bird = {
     x : birdX,
@@ -32,7 +35,7 @@ let bottomPipeImg;
 //physics
 let velocityX = -2; //pipes moving left speed
 let velocityY = 0; //bird jump speed
-let gravity = 0.4;
+let gravity = 0.9;
 
 let gameOver = false;
 let score = 0;
@@ -49,10 +52,17 @@ window.onload = function() {
 
     //load images
     birdImg = new Image();
-    birdImg.src = "./flappybird.png";
+    birdImg.src = "./birdAnim/bird1.gif";
     birdImg.onload = function() {
         context.drawImage(birdImg, bird.x, bird.y, bird.width, bird.height);
     }
+
+    groundImg = new Image();
+    groundImg.src = "./ground.jpg";
+    groundImg.onload = function() {
+        context.drawImage(groundImg, bird.x, 500, 360, bird.height);
+    }
+
 
     topPipeImg = new Image();
     topPipeImg.src = "./toppipe.png";
@@ -61,8 +71,10 @@ window.onload = function() {
     bottomPipeImg.src = "./bottompipe.png";
 
     requestAnimationFrame(update);
-    setInterval(placePipes, 1500); //every 1.5 seconds
+    setInterval(placePipes, 1350); //every 1.5 seconds
+    setInterval(changeBirdImg, 100); //every 1.5 seconds
     document.addEventListener("keydown", moveBird);
+    document.addEventListener("touchstart", moveBirdForMobile);
 }
 
 function update() {
@@ -71,17 +83,7 @@ function update() {
         return;
     }
     context.clearRect(0, 0, board.width, board.height);
-
-    //bird
-    velocityY += gravity;
-    // bird.y += velocityY;
-    bird.y = Math.max(bird.y + velocityY, 0); //apply gravity to current bird.y, limit the bird.y to top of the canvas
-    context.drawImage(birdImg, bird.x, bird.y, bird.width, bird.height);
-
-    if (bird.y > board.height) {
-        gameOver = true;
-    }
-
+    
     //pipes
     for (let i = 0; i < pipeArray.length; i++) {
         let pipe = pipeArray[i];
@@ -93,10 +95,23 @@ function update() {
             pipe.passed = true;
         }
 
-        if (detectCollision(bird, pipe)) {
-            gameOver = true;
-        }
+        // if (detectCollision(bird, pipe)) {
+        //     gameOver = true;
+        // }
     }
+
+    //bird
+    velocityY += gravity;
+    // bird.y += velocityY;
+    bird.y = Math.max(bird.y + velocityY, 0); //apply gravity to current bird.y, limit the bird.y to top of the canvas
+    context.drawImage(birdImg, bird.x, bird.y, bird.width, bird.height);
+    context.drawImage(groundImg, 0, 575, 360, 78);
+
+
+    if (bird.y > board.height-100) {
+        gameOver = true;
+    }
+    
 
     //clear pipes
     while (pipeArray.length > 0 && pipeArray[0].x < -pipeWidth) {
@@ -109,10 +124,34 @@ function update() {
     context.fillText(score, 5, 45);
 
     if (gameOver) {
-        context.fillText("GAME OVER", 5, 90);
+        context.fillText("GAME OVER", boardWidth/2-120, boardHeight/2-100, 250);
+        context.font = `30px Verdana`;
+        context.fillText("Your score: "+ score, boardWidth/2-90, boardHeight/2-50, 250, );
+        let highScore = localStorage.getItem("HighScore");
+        if(localStorage.getItem("HighScore")){
+            if(score > highScore){
+                localStorage.setItem("HighScore", score);
+                context.fillStyle = "Blue";
+                context.fillText("High Score: "+ score, boardWidth/2-95, boardHeight/2-10, 250);
+                context.font = "15px Verdana";
+                context.fillText("New High Score!!", boardWidth/2-60, boardHeight/2+20, 250);
+            } else {
+                context.fillText("High Score: "+ highScore, boardWidth/2-95, boardHeight/2-10, 250, );
+            }
+        } else {
+            localStorage.setItem("HighScore", score);
+        }
+        
     }
 }
 
+function changeBirdImg() {
+    birdImg.src = `./birdAnim/bird${imgIndex}.gif`;
+    imgIndex++;
+    if(imgIndex > 3){
+        imgIndex = 1;
+    }
+}
 function placePipes() {
     if (gameOver) {
         return;
@@ -146,9 +185,9 @@ function placePipes() {
 }
 
 function moveBird(e) {
-    if (e.code == "Space" || e.code == "ArrowUp" || e.code == "KeyX") {
+    if (e.code == "TouchEvent" || e.code == "Space" || e.code == "ArrowUp" || e.code == "KeyX") {
         //jump
-        velocityY = -6;
+        velocityY = -10;
 
         //reset game
         if (gameOver) {
@@ -159,6 +198,20 @@ function moveBird(e) {
         }
     }
 }
+
+function moveBirdForMobile(e) {
+    //jump
+    velocityY = -10;
+
+    //reset game
+    if (gameOver) {
+        bird.y = birdY;
+        pipeArray = [];
+        score = 0;
+        gameOver = false;
+    }
+}
+
 
 function detectCollision(a, b) {
     return a.x < b.x + b.width &&   //a's top left corner doesn't reach b's top right corner
