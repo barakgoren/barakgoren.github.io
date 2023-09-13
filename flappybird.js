@@ -202,6 +202,7 @@ function moveBird(e) {
 }
 
 function moveBirdForMobile(e) {
+    e.preventDefault();
     //jump
     velocityY = -10;
 
