@@ -10,16 +10,16 @@ let highScore = 0;
 //bird
 let birdWidth = 44; //width/height ratio = 408/228 = 17/12
 let birdHeight = 49;
-let birdX = boardWidth/8;
-let birdY = boardHeight/2;
+let birdX = boardWidth / 8;
+let birdY = boardHeight / 2;
 let birdImg;
 let imgIndex = 1;
 
 let bird = {
-    x : birdX,
-    y : birdY,
-    width : birdWidth,
-    height : birdHeight
+    x: birdX,
+    y: birdY,
+    width: birdWidth,
+    height: birdHeight
 }
 
 //pipes
@@ -40,7 +40,7 @@ let gravity = 0.9;
 let gameOver = false;
 let score = 0;
 
-window.onload = function() {
+window.onload = function () {
     board = document.getElementById("board");
     board.height = boardHeight;
     board.width = boardWidth;
@@ -53,13 +53,13 @@ window.onload = function() {
     //load images
     birdImg = new Image();
     birdImg.src = "./birdAnim/bird1.gif";
-    birdImg.onload = function() {
+    birdImg.onload = function () {
         context.drawImage(birdImg, bird.x, bird.y, bird.width, bird.height);
     }
 
     groundImg = new Image();
     groundImg.src = "./ground.jpg";
-    groundImg.onload = function() {
+    groundImg.onload = function () {
         context.drawImage(groundImg, bird.x, 500, 360, bird.height);
     }
 
@@ -83,7 +83,7 @@ function update() {
         return;
     }
     context.clearRect(0, 0, board.width, board.height);
-    
+
     //pipes
     for (let i = 0; i < pipeArray.length; i++) {
         let pipe = pipeArray[i];
@@ -95,9 +95,9 @@ function update() {
             pipe.passed = true;
         }
 
-        // if (detectCollision(bird, pipe)) {
-        //     gameOver = true;
-        // }
+        if (detectCollision(bird, pipe)) {
+            gameOver = true;
+        }
     }
 
     //bird
@@ -108,10 +108,10 @@ function update() {
     context.drawImage(groundImg, 0, 575, 360, 78);
 
 
-    if (bird.y > board.height-100) {
+    if (bird.y > board.height - 115) {
         gameOver = true;
     }
-    
+
 
     //clear pipes
     while (pipeArray.length > 0 && pipeArray[0].x < -pipeWidth) {
@@ -120,36 +120,38 @@ function update() {
 
     //score
     context.fillStyle = "white";
-    context.font="45px sans-serif";
+    context.font = "45px sans-serif";
     context.fillText(score, 5, 45);
 
     if (gameOver) {
-        context.fillText("GAME OVER", boardWidth/2-120, boardHeight/2-100, 250);
+        context.fillText("GAME OVER", boardWidth / 2 - 120, boardHeight / 2 - 100, 250);
         context.font = `30px Verdana`;
-        context.fillText("Your score: "+ score, boardWidth/2-90, boardHeight/2-50, 250, );
+        context.fillText("Your score: " + score, boardWidth / 2 - 90, boardHeight / 2 - 50, 250,);
         let highScore = localStorage.getItem("HighScore");
-        if(localStorage.getItem("HighScore")){
-            if(score > highScore){
+        if (localStorage.getItem("HighScore")) {
+            if (score > highScore) {
                 localStorage.setItem("HighScore", score);
                 context.fillStyle = "Blue";
-                context.fillText("High Score: "+ score, boardWidth/2-95, boardHeight/2-10, 250);
+                context.fillText("High Score: " + score, boardWidth / 2 - 95, boardHeight / 2 - 10, 250);
                 context.font = "15px Verdana";
-                context.fillText("New High Score!!", boardWidth/2-60, boardHeight/2+20, 250);
+                context.fillText("New High Score!!", boardWidth / 2 - 60, boardHeight / 2 + 20, 250);
             } else {
-                context.fillText("High Score: "+ highScore, boardWidth/2-95, boardHeight/2-10, 250, );
+                context.fillText("High Score: " + highScore, boardWidth / 2 - 95, boardHeight / 2 - 10, 250,);
             }
         } else {
             localStorage.setItem("HighScore", score);
         }
-        
+
     }
 }
 
 function changeBirdImg() {
-    birdImg.src = `./birdAnim/bird${imgIndex}.gif`;
-    imgIndex++;
-    if(imgIndex > 3){
-        imgIndex = 1;
+    if (!gameOver) {
+        birdImg.src = `./birdAnim/bird${imgIndex}.gif`;
+        imgIndex++;
+        if (imgIndex > 3) {
+            imgIndex = 1;
+        }
     }
 }
 function placePipes() {
@@ -160,26 +162,26 @@ function placePipes() {
     //(0-1) * pipeHeight/2.
     // 0 -> -128 (pipeHeight/4)
     // 1 -> -128 - 256 (pipeHeight/4 - pipeHeight/2) = -3/4 pipeHeight
-    let randomPipeY = pipeY - pipeHeight/4 - Math.random()*(pipeHeight/2);
-    let openingSpace = board.height/4;
+    let randomPipeY = pipeY - pipeHeight / 4 - Math.random() * (pipeHeight / 2);
+    let openingSpace = board.height / 4;
 
     let topPipe = {
-        img : topPipeImg,
-        x : pipeX,
-        y : randomPipeY,
-        width : pipeWidth,
-        height : pipeHeight,
-        passed : false
+        img: topPipeImg,
+        x: pipeX,
+        y: randomPipeY,
+        width: pipeWidth,
+        height: pipeHeight,
+        passed: false
     }
     pipeArray.push(topPipe);
 
     let bottomPipe = {
-        img : bottomPipeImg,
-        x : pipeX,
-        y : randomPipeY + pipeHeight + openingSpace,
-        width : pipeWidth,
-        height : pipeHeight,
-        passed : false
+        img: bottomPipeImg,
+        x: pipeX,
+        y: randomPipeY + pipeHeight + openingSpace,
+        width: pipeWidth,
+        height: pipeHeight,
+        passed: false
     }
     pipeArray.push(bottomPipe);
 }
@@ -215,7 +217,7 @@ function moveBirdForMobile(e) {
 
 function detectCollision(a, b) {
     return a.x < b.x + b.width &&   //a's top left corner doesn't reach b's top right corner
-           a.x + a.width > b.x &&   //a's top right corner passes b's top left corner
-           a.y < b.y + b.height &&  //a's top left corner doesn't reach b's bottom left corner
-           a.y + a.height > b.y;    //a's bottom left corner passes b's top left corner
+        a.x + a.width > b.x &&   //a's top right corner passes b's top left corner
+        a.y < b.y + b.height &&  //a's top left corner doesn't reach b's bottom left corner
+        a.y + a.height > b.y;    //a's bottom left corner passes b's top left corner
 }
