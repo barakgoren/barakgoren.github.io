@@ -204,7 +204,7 @@ function moveBird(e) {
 function moveBirdForMobile(e) {
     e.preventDefault();
     //jump
-    velocityY = -55;
+    velocityY = -8;
 
     //reset game
     if (gameOver) {
