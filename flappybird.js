@@ -35,7 +35,7 @@ let bottomPipeImg;
 //physics
 let velocityX = -2; //pipes moving left speed
 let velocityY = 0; //bird jump speed
-let gravity = 0.9;
+let gravity = 0.5;
 
 let gameOver = false;
 let score = 0;
@@ -189,7 +189,7 @@ function placePipes() {
 function moveBird(e) {
     if (e.code == "TouchEvent" || e.code == "Space" || e.code == "ArrowUp" || e.code == "KeyX") {
         //jump
-        velocityY = -10;
+        velocityY = -8;
 
         //reset game
         if (gameOver) {
@@ -204,7 +204,7 @@ function moveBird(e) {
 function moveBirdForMobile(e) {
     e.preventDefault();
     //jump
-    velocityY = -10;
+    velocityY = -55;
 
     //reset game
     if (gameOver) {
@@ -218,7 +218,7 @@ function moveBirdForMobile(e) {
 
 function detectCollision(a, b) {
     return a.x < b.x + b.width &&   //a's top left corner doesn't reach b's top right corner
-        a.x + a.width > b.x &&   //a's top right corner passes b's top left corner
-        a.y < b.y + b.height &&  //a's top left corner doesn't reach b's bottom left corner
-        a.y + a.height > b.y;    //a's bottom left corner passes b's top left corner
+        a.x + a.width-7 > b.x &&   //a's top right corner passes b's top left corner
+        a.y < b.y + b.height-10 &&  //a's top left corner doesn't reach b's bottom left corner
+        a.y + a.height > b.y+10;    //a's bottom left corner passes b's top left corner
 }
