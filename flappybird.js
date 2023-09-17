@@ -108,9 +108,9 @@ function update() {
     context.drawImage(groundImg, 0, 575, 360, 78);
 
 
-    if (bird.y > board.height - 115) {
-        gameOver = true;
-    }
+    //if (bird.y > board.height - 115) {
+        //gameOver = true;
+    //}
 
 
     //clear pipes
