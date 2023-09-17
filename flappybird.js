@@ -95,9 +95,9 @@ function update() {
             pipe.passed = true;
         }
 
-        //if (detectCollision(bird, pipe)) {
-            //gameOver = true;
-        //}
+        if (detectCollision(bird, pipe)) {
+            gameOver = true;
+        }
     }
 
     //bird
